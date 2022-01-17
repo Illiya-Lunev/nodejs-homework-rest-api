@@ -33,22 +33,18 @@ router.patch(
   authToken,
   upload.single('avatar'),
   async (req, res) => {
-    try {
-      const { path: tempUpload, filename } = req.file;
-      const [extension] = filename.split('.').reverse();
-      const newFileName = `${req.user._id}.${extension}`;
-      const fileUpload = path.join(avatarDir, newFileName);
-      await fs.rename(tempUpload, fileUpload);
-      const avatarURL = path.join('avatars', newFileName);
-      await User.findByIdAndUpdate(req.user._id, { avatarURL }, { new: true });
-      res.json({ avatarURL });
+    const { path: tempUpload, filename } = req.file;
+    const [extension] = filename.split('.').reverse();
+    const newFileName = `${req.user._id}.${extension}`;
+    const fileUpload = path.join(avatarDir, newFileName);
+    await fs.rename(tempUpload, fileUpload);
+    const avatarURL = path.join('avatars', newFileName);
 
-      await Jimp.read(tempUpload).then(image => {
-        return image.resize(250, 250).quality(60).write(fileUpload);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    const avatarReSize = await Jimp.read(fileUpload);
+    avatarReSize.resize(250, 250);
+    avatarReSize.write(fileUpload);
+    await User.findByIdAndUpdate(req.user._id, { avatarURL }, { new: true });
+    res.json({ avatarURL });
   },
 );
 
