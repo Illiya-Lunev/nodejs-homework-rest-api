@@ -40,9 +40,14 @@ router.patch(
     await fs.rename(tempUpload, fileUpload);
     const avatarURL = path.join('avatars', newFileName);
 
-    const avatarReSize = await Jimp.read(fileUpload);
-    avatarReSize.resize(250, 250);
-    avatarReSize.write(fileUpload);
+    try {
+      const avatarReSize = await Jimp.read(fileUpload);
+      avatarReSize.resize(250, 250);
+      avatarReSize.write(fileUpload);
+    } catch (error) {
+      console.log(error);
+    }
+
     await User.findByIdAndUpdate(req.user._id, { avatarURL }, { new: true });
     res.json({ avatarURL });
   },
