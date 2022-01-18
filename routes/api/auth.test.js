@@ -21,11 +21,10 @@ describe('test auth', () => {
       mongoose.connection.close(() => done());
     });
   });
-
   test('test signup route', async () => {
     const registerData = {
-      name: 'test7',
-      email: 'test7@gmail.com',
+      name: 'test10',
+      email: 'test10@gmail.com',
       password: '123456',
     };
 
@@ -35,7 +34,7 @@ describe('test auth', () => {
 
     expect(response.statusCode).toBe(201);
 
-    const user = await User.findById(response.body._id);
+    const user = await User.findById(response.body.email);
     expect(user).toByTruthy();
     expect(user.name).toBe(registerData.name);
     expect(user.email).toBe(registerData.email);
@@ -43,7 +42,7 @@ describe('test auth', () => {
 
   test('test login route', async () => {
     const loginData = {
-      email: 'test7@gmail.com',
+      email: 'test10@gmail.com',
       password: '123456',
     };
 
