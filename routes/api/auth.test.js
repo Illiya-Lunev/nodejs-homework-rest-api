@@ -1,8 +1,8 @@
-const app = require('../../app');
-const request = require('supertest');
 const mongoose = require('mongoose');
+const request = require('supertest');
 require('dotenv').config();
 
+const app = require('../../app');
 const { User } = require('../../model/user');
 
 const { DB_TEST_HOST } = process.env;
@@ -22,18 +22,24 @@ describe('test auth', () => {
     });
   });
 
-  test('test signup route ', async () => {
-    const regData = {
-      name: 'Test',
-      email: 'test@mail.com',
-      password: '123aaa',
+  test('test signup route', async () => {
+    const registerData = {
+      name: 'test5',
+      email: 'test5@gmail.com',
+      password: '123456',
     };
-    const response = await request(app).post('api/auth/signup ').send(regData);
 
+    const response = await request(app)
+      .post('/api/auth/signup')
+      .send(registerData);
+
+    // check response
     expect(response.statusCode).toBe(201);
-    const user = await User.findOne(response.body.email);
-    expect(user).toBeTruthy();
-    expect(user.name).toBe(regData.name);
-    expect(user.email).toBe(regData.email);
+
+    // check data in database
+    const user = await User.findById(response.body._id);
+    expect(user).toByTruthy();
+    expect(user.name).toBe(registerData.name);
+    expect(user.email).toBe(registerData.email);
   });
 });
